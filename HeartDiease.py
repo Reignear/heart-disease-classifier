@@ -4,7 +4,7 @@ import joblib
 import numpy as np
 
 try:
-    model = joblib.load('heart_disease_model.joblib')
+    model = joblib.load('heart_disease_model_2.joblib')
     expected_features = model.feature_names_in_
     st.session_state['expected_features'] = expected_features
 except Exception as e:
