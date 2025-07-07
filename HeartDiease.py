@@ -1,21 +1,16 @@
 import streamlit as st
 import pandas as pd
-import joblib
-import numpy as np
+import joblib 
 
-try:
-    model = joblib.load('heart_disease_model_2.joblib')
-    st.session_state['expected_features'] = model.feature_names_in_.tolist()
-except Exception as e:
-    st.error(f"Error loading model: {e}")
-    expected_features = []
+model = joblib.load('heart_disease_model_2.joblib')
 
 st.title('Heart Disease Prediction')
 st.write('Enter the following details to predict the risk of heart disease:')
 
-
+# Create a dictionary to store all input values
 input_data = {}
 
+# Health Metrics Section
 st.header('Health Metrics')
 col1, col2 = st.columns(2)
 with col1:
@@ -25,6 +20,7 @@ with col2:
     input_data['MentalHealth'] = st.slider('Mental Health (days where health not good, past 30 days)', 0, 30, 0)
     input_data['SleepTime'] = st.slider('Average Sleep Time (hours/day)', 1, 24, 7)
 
+# Demographics Section
 st.header('Demographics')
 col1, col2 = st.columns(2)
 with col1:
@@ -44,19 +40,7 @@ with col2:
     for category in race_categories:
         input_data[f'Race_{category}'] = 1 if race == category else 0
 
-# Lifestyle Factors Section
-st.header('Lifestyle Factors')
-col1, col2, col3 = st.columns(3)
-with col1:
-    smoking = st.radio('Smoking', ['No', 'Yes'])
-    input_data['Smoking'] = 0 if smoking == 'No' else 1
-with col2:
-    alcohol = st.radio('Alcohol Drinking', ['No', 'Yes'])
-    input_data['AlcoholDrinking'] = 0 if alcohol == 'No' else 1
-with col3:
-    activity = st.radio('Physical Activity', ['No', 'Yes'])
-    input_data['PhysicalActivity'] = 0 if activity == 'No' else 1
-
+# Medical Conditions Section
 st.header('Medical Conditions')
 col1, col2 = st.columns(2)
 with col1:
@@ -85,55 +69,45 @@ with col2:
     else:  # Borderline or during pregnancy
         input_data['Diabetic'] = 0.5
 
+# Self-Reported Health Section
 st.header('Self-Reported Health')
 health_options = ['Excellent', 'Very good', 'Good', 'Fair', 'Poor']
 gen_health = st.select_slider('General Health', options=health_options, value='Good')
 for option in health_options:
     input_data[f'GenHealth_{option}'] = 1 if gen_health == option else 0
 
-
+# Make prediction
 if st.button('Predict Heart Disease Risk'):
-
+    # Convert the input data to DataFrame
     input_df = pd.DataFrame([input_data])
     
-    st.write("Debug information (will be hidden in production):")
-    st.write(f"Input features: {input_df.columns.tolist()}")
+    # Make prediction
+    prediction = model.predict(input_df)
+    prediction_proba = model.predict_proba(input_df)
     
-    if 'expected_features' in st.session_state and len(st.session_state['expected_features']) > 0:
-        st.write(f"Model expects: {st.session_state['expected_features'].tolist()}")
-        
-        for feature in st.session_state['expected_features']:
-            if feature not in input_df.columns:
-                input_df[feature] = 0 
-  
-        input_df = input_df[st.session_state['expected_features']]
-        
-        try:
-            prediction = model.predict(input_df)
-            prediction_proba = model.predict_proba(input_df)
-            st.subheader('Prediction Result')
-            if prediction[0] == 1:
-                st.error('⚠️ High risk of heart disease detected')
-                st.write(f'Probability: {prediction_proba[0][1]:.2%}')
-            else:
-                st.success('✅ Low risk of heart disease')
-                st.write(f'Probability: {prediction_proba[0][0]:.2%}')
-        
-            st.subheader('Explanation')
-            st.write("""
-            This prediction is based on your input data compared to patterns learned from thousands of patient records.
-            Risk factors for heart disease include age, lifestyle factors like smoking and physical inactivity,
-            and medical conditions like diabetes and hypertension.
-            """)
-            st.write("Based on these factors, the model has made its prediction.")
-            st.subheader('Recommendations')
-            st.write("""
-            - Consult with a healthcare provider for a thorough evaluation
-            - Maintain a healthy diet and regular exercise routine
-            - Monitor blood pressure and cholesterol levels regularly
-            - Avoid smoking and limit alcohol consumption
-            """)
-        except Exception as e:
-            st.error(f"Error making prediction: {e}")
+    # Display result
+    
+    st.subheader('Prediction Result')
+    if prediction[0] == 1:
+        st.error('⚠️ High risk of heart disease detected')
+        st.write(f'Probability: {prediction_proba[0][1]:.2%}')
     else:
-        st.error("Model not loaded properly or feature names not available")
+        st.success('✅ Low risk of heart disease')
+        st.write(f'Probability: {prediction_proba[0][0]:.2%}')
+    
+    # Display explanation
+    st.subheader('Explanation')
+    st.write("""
+    This prediction is based on your input data compared to patterns learned from thousands of patient records.
+    Risk factors for heart disease include age, lifestyle factors like smoking and physical inactivity,
+    and medical conditions like diabetes and hypertension.
+    """)
+    
+    # Recommendations
+    st.subheader('Recommendations')
+    st.write("""
+    - Consult with a healthcare provider for a thorough evaluation
+    - Maintain a healthy diet and regular exercise routine
+    - Monitor blood pressure and cholesterol levels regularly
+    - Avoid smoking and limit alcohol consumption
+    """)
