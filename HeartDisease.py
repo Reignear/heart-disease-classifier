@@ -12,7 +12,7 @@ expected_features = [
     'DiffWalking', 'Diabetic', 'Asthma', 'KidneyDisease', 'SkinCancer'
 ]
 
-st.title('Heart Disease Prediction')
+st.title('Magallanes Heart Disease Prediction')
 st.write('Enter the following details to predict the risk of heart disease:')
 
 # Create a dictionary to store input values
