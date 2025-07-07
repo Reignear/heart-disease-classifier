@@ -54,26 +54,33 @@ with col2:
     elif diabetic_status == 'No':
         input_data['Diabetic'] = 0
     else:
-        input_data['Diabetic'] = 0.5  # For borderline or gestational
+        input_data['Diabetic'] = 0.5 
 
-# Predict Button
+
 if st.button('Predict Heart Disease Risk'):
-    # Create input DataFrame and ensure correct feature order
-    input_df = pd.DataFrame([input_data])
-    input_df = input_df[expected_features]  # Ensures model compatibility
 
-    # Make prediction
+    input_df = pd.DataFrame([input_data])
+    input_df = input_df[expected_features] 
+
     prediction = model.predict(input_df)
     prediction_proba = model.predict_proba(input_df)
 
-    # Display result
     st.subheader('Prediction Result')
+    # Get the probability of heart disease (class 1)
+    heart_disease_prob = prediction_proba[0][1]
+
     if prediction[0] == 1:
-        st.error('⚠️ High risk of heart disease detected')
-        st.write(f'Probability: {prediction_proba[0][1]:.2%}')
+        if heart_disease_prob >= 0.75:
+            st.error('⚠️ High risk of heart disease detected')
+        else:
+            st.warning('⚠️ Moderate risk of heart disease detected')
+        st.write(f'Probability: {heart_disease_prob:.2%}')
     else:
-        st.success('✅ Low risk of heart disease')
-        st.write(f'Probability: {prediction_proba[0][0]:.2%}')
+        if heart_disease_prob <= 0.25:
+            st.success('✅ Low risk of heart disease')
+        else:
+            st.info('ℹ️ Low to moderate risk of heart disease')
+        st.write(f'Probability: {heart_disease_prob:.2%}')
 
     # Explanation
     st.subheader('Explanation')
