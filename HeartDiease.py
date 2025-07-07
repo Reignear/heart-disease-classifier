@@ -50,45 +50,41 @@ st.header('Lifestyle Factors')
 col1, col2, col3 = st.columns(3)
 with col1:
     smoking = st.radio('Smoking', ['No', 'Yes'])
-    input_data['Smoking_no'] = 1 if smoking == 'No' else 0
-    input_data['Smoking_yes'] = 1 if smoking == 'Yes' else 0
+    input_data['Smoking'] = 0 if smoking == 'No' else 1
 with col2:
     alcohol = st.radio('Alcohol Drinking', ['No', 'Yes'])
-    input_data['AlcoholDrinking_No'] = 1 if alcohol == 'No' else 0
-    input_data['AlcoholDrinking_Yes'] = 1 if alcohol == 'Yes' else 0
+    input_data['AlcoholDrinking'] = 0 if alcohol == 'No' else 1
 with col3:
     activity = st.radio('Physical Activity', ['No', 'Yes'])
-    input_data['PhysicalActivity_No'] = 1 if activity == 'No' else 0
-    input_data['PhysicalActivity_Yes'] = 1 if activity == 'Yes' else 0
+    input_data['PhysicalActivity'] = 0 if activity == 'No' else 1
 
 st.header('Medical Conditions')
 col1, col2 = st.columns(2)
 with col1:
     stroke = st.radio('Stroke', ['No', 'Yes'])
-    input_data['Stroke_No'] = 1 if stroke == 'No' else 0
-    input_data['Stroke_Yes'] = 1 if stroke == 'Yes' else 0
+    input_data['Stroke'] = 0 if stroke == 'No' else 1
     
     diff_walking = st.radio('Difficulty Walking', ['No', 'Yes'])
-    input_data['DiffWalking_No'] = 1 if diff_walking == 'No' else 0
-    input_data['DiffWalking_Yes'] = 1 if diff_walking == 'Yes' else 0
+    input_data['DiffWalking'] = 0 if diff_walking == 'No' else 1
     
     asthma = st.radio('Asthma', ['No', 'Yes'])
-    input_data['Asthma_No'] = 1 if asthma == 'No' else 0
-    input_data['Asthma_Yes'] = 1 if asthma == 'Yes' else 0
+    input_data['Asthma'] = 0 if asthma == 'No' else 1
 
 with col2:
     kidney_disease = st.radio('Kidney Disease', ['No', 'Yes'])
-    input_data['KidneyDisease_No'] = 1 if kidney_disease == 'No' else 0
-    input_data['KidneyDisease_Yes'] = 1 if kidney_disease == 'Yes' else 0
+    input_data['KidneyDisease'] = 0 if kidney_disease == 'No' else 1
     
     skin_cancer = st.radio('Skin Cancer', ['No', 'Yes'])
-    input_data['SkinCancer_No'] = 1 if skin_cancer == 'No' else 0
-    input_data['SkinCancer_Yes'] = 1 if skin_cancer == 'Yes' else 0
+    input_data['SkinCancer'] = 0 if skin_cancer == 'No' else 1
     
     diabetic_options = ['No', 'No, borderline diabetes', 'Yes', 'Yes (during pregnancy)']
     diabetic = st.selectbox('Diabetic', diabetic_options)
-    for option in diabetic_options:
-        input_data[f'Diabetic_{option}'] = 1 if diabetic == option else 0
+    if diabetic == 'No':
+        input_data['Diabetic'] = 0
+    elif diabetic == 'Yes':
+        input_data['Diabetic'] = 1
+    else:  # Borderline or during pregnancy
+        input_data['Diabetic'] = 0.5
 
 st.header('Self-Reported Health')
 health_options = ['Excellent', 'Very good', 'Good', 'Fair', 'Poor']
