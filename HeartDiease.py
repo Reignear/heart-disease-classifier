@@ -5,8 +5,7 @@ import numpy as np
 
 try:
     model = joblib.load('heart_disease_model_2.joblib')
-    expected_features = model.feature_names_in_
-    st.session_state['expected_features'] = expected_features
+    st.session_state['expected_features'] = model.feature_names_in_.tolist()
 except Exception as e:
     st.error(f"Error loading model: {e}")
     expected_features = []
